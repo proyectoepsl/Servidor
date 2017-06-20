@@ -10,9 +10,9 @@ class AdminSala (admin.ModelAdmin):
 admin.site.register(Sala,AdminSala)
 
 class AdminUsuario (admin.ModelAdmin):
-    list_display = ['Id_Usuario','Nombre','Apellidos','Clave','Activo']
+    list_display = ['Id_Usuario','Nombre','Apellidos','Dni','Clave','Activo']
     list_editable = ['Nombre','Apellidos','Clave','Activo']
-    search_fields = ['Id_Usuario','Nombre','Apellidos','Activo']
+    search_fields = ['Id_Usuario','Nombre','Apellidos','Dni','Activo']
 
 admin.site.register(Usuario,AdminUsuario)
 

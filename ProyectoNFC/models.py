@@ -16,6 +16,7 @@ class Usuario (models.Model):
     Id_Usuario = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=30)
     Apellidos = models.CharField(max_length=30)
+    Dni=models.CharField(max_length=9)
     Clave = models.CharField(max_length=30,unique=True)
     Activo = models.BooleanField(default=False)
 
