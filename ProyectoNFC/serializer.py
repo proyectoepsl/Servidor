@@ -11,7 +11,7 @@ class RegistroSerializer (serializers.ModelSerializer):
 class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Usuario
-        fields = ('Id_Usuario','Nombre','Apellidos','Clave','Activo')
+        fields = ('Id_Usuario','Nombre','Apellidos','Dni','Clave','Activo')
 
 class SalaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

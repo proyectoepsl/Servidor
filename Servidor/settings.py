@@ -26,12 +26,14 @@ SECRET_KEY = 'ls5o4yb7my0_*m2kp2ua%$g(!+w_o*rew70wupg87u7_+a2vpg'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+ADMIN_VIEW_PERMISSION_MODELS = [
+    'auth.User',
+]
 # Application definition
 
 INSTALLED_APPS = [
     'suit',
+    'admin_view_permission',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

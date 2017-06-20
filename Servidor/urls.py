@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^rest_usuario/$', viewsets.UsuarioViewSet),
     url(r'^rest_sala/$', viewsets.SalaViewSet),
 
+
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
 
