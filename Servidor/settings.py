@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ProyectoNFC.apps.ProyectonfcConfig',
     'rest_framework',
+    'crypto'
 ]
 SUIT_CONFIG = {
     'ADMIN_NAME': 'SERVIDOR PROYECTO NFC'

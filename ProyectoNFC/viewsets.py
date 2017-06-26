@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from .models import Registro,Usuario,Sala
 from .serializer import RegistroSerializer,UsuarioSerializer,SalaSerializer
 
+
 @csrf_exempt
 def RegistroViewSet(request):
 
     if request.method == 'GET':
+
         query = Registro.objects.all()
         serializer = RegistroSerializer(query, many=True)
         return JsonResponse(serializer.data, safe=False)
@@ -31,6 +33,8 @@ def RegistroViewSet(request):
             return JsonResponse(serializer.errors, status=400)
 
         '''
+
+        '''
         try:
             Usuario.objects.get(Id_Usuario=data["Usuario_id"])
             Sala.objects.get(Id_Sala=data["Sala_id"])
@@ -38,11 +42,17 @@ def RegistroViewSet(request):
                 Sala_id=data["Sala_id"],
                 Usuario_id= data["Usuario_id"]
             )
+            serializer = RegistroSerializer(data=request)
+            if serializer.is_valid():
+                serializer.save()
             return JsonResponse(data,status=201)
 
 
         except:
             return JsonResponse(data, status=400)
+
+        '''
+
 
 
 
