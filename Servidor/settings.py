@@ -25,10 +25,8 @@ SECRET_KEY = 'ls5o4yb7my0_*m2kp2ua%$g(!+w_o*rew70wupg87u7_+a2vpg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-ADMIN_VIEW_PERMISSION_MODELS = [
-    'auth.User',
-]
+ALLOWED_HOSTS = ['localhost','192.168.2.129']
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -111,6 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
+    ),
+     'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
     )
 }
 # Internationalization

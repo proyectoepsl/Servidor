@@ -8,10 +8,10 @@ class Sala (models.Model):
     Hash =models.CharField(max_length=30)
     Aforo = models.IntegerField(null= True)
     Activo = models.BooleanField(default= False)
-
+'''
     def __str__(self):
         return (self.Nombre)
-
+'''
 class Usuario (models.Model):
     Id_Usuario = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=30)

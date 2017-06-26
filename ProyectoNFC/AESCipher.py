@@ -6,7 +6,8 @@ from Cryptodome import Random
 
 class AESCipher:
 
-    def __init__(self, key):
+    def __init__(self):
+        key = b'this is my key'
         self.bs = int(16)
         self.key = hashlib.sha256(key).digest()
 
@@ -34,7 +35,7 @@ class AESCipher:
     @staticmethod
     def _unpad(s):
         return s[:-ord(s[len(s)-1:])]
-
+'''
 key = b'this is my key'
 mensaje = b'this is local test'
 
@@ -45,3 +46,4 @@ mensajeEncriptado=b'X9G5cBZ5/Hvcqez9fjsIM6RARpYUnoTOb5cdCW9FzJFhKcA+2EEsl0pEpBVN
 
 mensajeDesencriptado=AESCipher(key).decrypt(mensajeEncriptado)
 print(mensajeDesencriptado)
+'''
