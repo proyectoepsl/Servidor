@@ -66,13 +66,18 @@ def UsuarioViewSet(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         Salaint = data["Sala_id"]
+        Salaint = Salaint.rstrip("\n")
         # Guardo el dato que me llega del Json
         Dni = data["Dni"]
         # Quito el \n al mensaje
         Dni = Dni.rstrip("\n")
 
+
         # Desencriptar Mensaje
-        # mensajeDesencriptado = AESCipher().decrypt(Dni)
+        Dni = AESCipher().decrypt(Dni)
+        Dni = Dni.lower()
+        Salaint = AESCipher().decrypt(Salaint)
+
         # Comprobar si existe el Usuario
         try:
             consulta = Usuario.objects.get(Dni=Dni)
@@ -90,7 +95,9 @@ def UsuarioViewSet(request):
                         consulta2 = Sala.objects.get(Id_Sala=int(Salaint))
                         # Consultar el aforo
                         if consulta2.Aforo > 0:
-                            consulta2.Aforo = consulta2.Aforo - 1
+                            #Descontar uno al aforo
+                            consulta2.Aforo -= 1
+                            consulta2.save()
 
                             #Guardar datos en Registro Nuevo
                             datos = Registro(
@@ -127,18 +134,21 @@ def SalaViewSet(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
+        try:
+            # Guardo el dato que me llega del Json
+            Hash = data["Hash"]
+            # Quito el \n al mensaje
+            Hash = Hash.rstrip("\n")
 
-        # Guardo el dato que me llega del Json
-        Hash = data["Hash"]
-        # Quito el \n al mensaje
-        Hash = Hash.rstrip("\n")
-        '''
-        #Añado b' al Hash
-        Hash1 ="b'{0}'"
-        Hash2=Hash1.format(Hash)
-        '''
-        # Desencriptar Mensaje
-        mensajeDesencriptado = AESCipher().decrypt(Hash)
+            #Añado b' al Hash
+            Hash1 ="b'{0}'"
+            Hash2=Hash1.format(Hash)
+
+             # Desencriptar Mensaje
+            mensajeDesencriptado = AESCipher().decrypt(Hash)
+
+        except :
+            return HttpResponse("Imei no existe en la base de datos", status=404)
         # Comprobar si existe el imei
         try:
             consulta = Sala.objects.get(Hash=mensajeDesencriptado)
