@@ -83,13 +83,10 @@ def UsuarioViewSet(request):
                     consulta1 = Permiso.objects.get(Usuario=consulta.Id_Usuario)
                 except Permiso.DoesNotExist:
                     return HttpResponse("Usuario no existe en la tabla permisos", status=404)
-                    # Consultar si el usuario tiene permisos para esa sala
-
+                # Consultar si el usuario tiene permiso
                 if consulta1.Permiso:
-                    print(consulta1.Sala_id)
-
+                    #Consultar si es la sala donde quiere entrar si es donde tiene los permisos
                     if consulta1.Sala_id== int(Salaint):
-                        print("Hoal")
                         consulta2 = Sala.objects.get(Id_Sala=int(Salaint))
                         # Consultar el aforo
                         if consulta2.Aforo > 0:
