@@ -91,6 +91,13 @@ def UsuarioViewSet(request):
                         # Consultar el aforo
                         if consulta2.Aforo > 0:
                             consulta2.Aforo = consulta2.Aforo - 1
+
+                            #Guardar datos en Registro Nuevo
+                            datos = Registro(
+                                Sala_id=int(Salaint),
+                                Usuario_id=int(consulta.Id_Usuario)
+                            )
+                            datos.save()
                             response_data = {}
                             response_data['result'] = 200
                             response_data['IdSala'] = consulta2.Id_Sala

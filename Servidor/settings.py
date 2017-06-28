@@ -119,7 +119,7 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = "es-es"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
