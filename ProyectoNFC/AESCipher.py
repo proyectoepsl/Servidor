@@ -14,14 +14,12 @@ class AESCipher:
     def encrypt(self, message):
         message = self._pad(message)
         iv = Random.new().read(AES.block_size)
-        #iv=b'\xa4\x909\x05\xe0q]F\xde\x83l\xddgL\xb3\xad'
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(message)).decode('utf-8')
 
     def decrypt(self, enc):
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
-        #iv = b'\xa4\x909\x05\xe0q]F\xde\x83l\xddgL\xb3\xad'
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
 

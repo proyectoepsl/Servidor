@@ -1,5 +1,5 @@
 
-from .models import Registro,Usuario,Sala
+from .models import Registro,Usuario,Sala,Permiso
 from rest_framework import  serializers
 
 # Serializers define the API representation.
@@ -18,3 +18,7 @@ class SalaSerializer(serializers.HyperlinkedModelSerializer):
         model = Sala
         fields = ('Id_Sala','Nombre','Hash','Aforo','Activo')
 
+class PermisoSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Permiso
+        fields = ('Id_Permiso','Sala','Usuario','Permiso')

@@ -8,16 +8,15 @@ class Sala (models.Model):
     Hash =models.CharField(max_length=30)
     Aforo = models.IntegerField(null= True)
     Activo = models.BooleanField(default= False)
-'''
+
     def __str__(self):
         return (self.Nombre)
-'''
+
 class Usuario (models.Model):
     Id_Usuario = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=30)
     Apellidos = models.CharField(max_length=30)
     Dni=models.CharField(max_length=9)
-    Clave = models.CharField(max_length=30,unique=True)
     Activo = models.BooleanField(default=False)
 
     def __str__(self):
@@ -31,3 +30,8 @@ class Registro (models.Model):
     Fecha_Out = models.DateTimeField(auto_now_add=False,auto_now=True,null=True)
 
 
+class Permiso(models.Model):
+    Id_Permiso = models.AutoField(primary_key=True)
+    Sala = models.ForeignKey('Sala')
+    Usuario = models.ForeignKey('Usuario')
+    Permiso = models.BooleanField(default=False)
