@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 class Sala (models.Model):
     Id_Sala = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=50, unique=True)
-    Hash =models.CharField(max_length=30)
+    Hash =models.CharField(max_length=15,unique=True)
     Aforo = models.IntegerField(null= True)
     Activo = models.BooleanField(default= False)
     Plano = models.ImageField(upload_to='photos/')

@@ -119,17 +119,37 @@ def UsuarioViewSet(request):
                             return HttpResponse(json.dumps(response_data), content_type="application/json")
 
                         else:
+                            response_data = {}
+                            response_data['result'] = 403
+                            response_data['Error'] = "Sala ocupada"
+                            return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-                            return HttpResponse("Sala ocupada", status=404)
                     else:
-                        return HttpResponse("En esta sala no puede entrar este Usuario", status=404)
+                        response_data = {}
+                        response_data['result'] = 403
+                        response_data['Error'] = "En esta sala no puede entrar este Usuario"
+                        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
                 else:
-                    return HttpResponse("El usuario no tiene permisos", status=401)
+                    response_data = {}
+                    response_data['result'] = 403
+                    response_data['Error'] = "El usuario no tiene permisos"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
 
             else:
-                return HttpResponse("El usuario esta desactivado", status=404)
+                response_data = {}
+                response_data['result'] = 401
+                response_data['Error'] = "El usuario esta desactivado"
+                return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
         except Usuario.DoesNotExist:
-            return HttpResponse("Usuario no existe", status=404)
+            response_data = {}
+            response_data['result'] = 401
+            response_data['Error'] = "Usuario no existe"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+
 
 
 @csrf_exempt
@@ -158,7 +178,11 @@ def SalaViewSet(request):
             mensajeDesencriptado = AESCipher().decrypt(Hash)
 
         except :
-            return HttpResponse("Imei no existe en la base de datos", status=404)
+            response_data = {}
+            response_data['result'] = 500
+            response_data['Error'] = "Mensaje no ha podido ser descifrado"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+
         # Comprobar si existe el imei
         try:
             consulta = Sala.objects.get(Hash=mensajeDesencriptado)
@@ -178,4 +202,7 @@ def SalaViewSet(request):
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
 
         except Sala.DoesNotExist:
-            return HttpResponse("Imei no existe en la base de datos", status=404)
+            response_data = {}
+            response_data['result'] = 404
+            response_data['Error'] = "Imei no existe en la base de datos"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
