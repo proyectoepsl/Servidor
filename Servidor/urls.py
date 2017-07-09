@@ -17,17 +17,20 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from ProyectoNFC import viewsets
 from rest_framework.urlpatterns import format_suffix_patterns
+from django.conf import settings
+from django.conf.urls.static import static
 admin.autodiscover()
 
 
 urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^', admin.site.urls),
-    url(r'^rest_registro/$', viewsets.RegistroViewSet),
     url(r'^rest_usuario/$', viewsets.UsuarioViewSet),
     url(r'^rest_sala/$', viewsets.SalaViewSet),
 
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

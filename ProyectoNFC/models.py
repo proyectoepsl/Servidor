@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class Sala (models.Model):
@@ -8,7 +9,13 @@ class Sala (models.Model):
     Hash =models.CharField(max_length=30)
     Aforo = models.IntegerField(null= True)
     Activo = models.BooleanField(default= False)
+    Plano = models.ImageField(upload_to='photos/')
+    Dependencia=models.CharField(max_length=5,null= True )
 
+    def Plano1(self):
+        return mark_safe('<img src="/media/%s" width="200" height="200" />' % (self.Plano))
+
+    Plano1.short_description = 'Plano Sala'
     def __str__(self):
         return (self.Nombre)
 

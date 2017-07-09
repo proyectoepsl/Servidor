@@ -3,9 +3,9 @@ from django.contrib import admin
 from .models import Sala,Usuario,Registro,Permiso
 
 class AdminSala (admin.ModelAdmin):
-    list_display = ['Id_Sala','Nombre','Hash','Aforo','Activo']
-    list_editable = ['Nombre','Hash','Activo','Aforo']
-    search_fields = ['Id_Sala','Nombre','Hash','Aforo','Activo']
+    list_display = ['Id_Sala','Nombre','Hash','Aforo','Activo','Plano1','Dependencia']
+    list_editable = ['Nombre','Hash','Activo','Aforo','Dependencia']
+    search_fields = ['Id_Sala','Nombre','Hash','Aforo','Activo','Dependencia']
 
 admin.site.register(Sala,AdminSala)
 

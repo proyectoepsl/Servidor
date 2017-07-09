@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['localhost','192.168.2.129']
 # Application definition
 
 INSTALLED_APPS = [
+    'suitlocale',
     'suit',
     'admin_view_permission',
     'django.contrib.admin',
@@ -54,9 +55,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Servidor.urls'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 TEMPLATES = [
     {
@@ -74,6 +79,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'Servidor.wsgi.application'
 
@@ -106,6 +112,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+#Vista segun los permisos del usuario
+ADMIN_VIEW_PERMISSION_MODELS = [
+    'auth.User',
+
+]
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -114,10 +125,18 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
     )
 }
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = "es-es"
+DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
+TIME_INPUT_FORMATS = (
+            '%H:%M:%S',     # '14:30:59'
+                '%H:%M',        # '14:30'
+                )
+
+
 
 TIME_ZONE = 'Europe/Madrid'
 

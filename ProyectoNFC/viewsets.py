@@ -7,54 +7,7 @@ from .serializer import RegistroSerializer, UsuarioSerializer, SalaSerializer
 from .AESCipher import *
 
 import json
-
-
-@csrf_exempt
-def RegistroViewSet(request):
-    if request.method == 'GET':
-
-        query = Registro.objects.all()
-        serializer = RegistroSerializer(query, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        print('-----------------------')
-        print(data)
-        print(data["Sala_id"])
-        print(data["Usuario_id"])
-        print('-----------------------')
-        '''
-        serializer = RegistroSerializer(data=request)
-        print('-----------------------')
-        print(repr(serializer))
-        print('-----------------------')
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-            return JsonResponse(serializer.errors, status=400)
-
-        '''
-
-        '''
-        try:
-            Usuario.objects.get(Id_Usuario=data["Usuario_id"])
-            Sala.objects.get(Id_Sala=data["Sala_id"])
-            datos=Registro(
-                Sala_id=data["Sala_id"],
-                Usuario_id= data["Usuario_id"]
-            )
-            serializer = RegistroSerializer(data=request)
-            if serializer.is_valid():
-                serializer.save()
-            return JsonResponse(data,status=201)
-
-
-        except:
-            return JsonResponse(data, status=400)
-
-        '''
-
+import base64
 
 @csrf_exempt
 def UsuarioViewSet(request):
@@ -67,16 +20,15 @@ def UsuarioViewSet(request):
         data = JSONParser().parse(request)
         Salaint = data["Sala_id"]
         Salaint = Salaint.rstrip("\n")
-        # Guardo el dato que me llega del Json
+        #Salaint = AESCipher().decrypt(Salaint)
         Dni = data["Dni"]
-        # Quito el \n al mensaje
         Dni = Dni.rstrip("\n")
 
 
         # Desencriptar Mensaje
-        Dni = AESCipher().decrypt(Dni)
-        Dni = Dni.lower()
-        Salaint = AESCipher().decrypt(Salaint)
+        #Dni = AESCipher().decrypt(Dni)
+        #Dni = Dni.lower()
+
 
         # Comprobar si existe el Usuario
         try:
@@ -98,7 +50,62 @@ def UsuarioViewSet(request):
                             #Descontar uno al aforo
                             consulta2.Aforo -= 1
                             consulta2.save()
+                            #Comprobar si registro es de entrada o de salida
+                            '''
+                            try:
+                                consulta3 = Registro.objects.all(Usuario_id=consulta.Id_Usuario)
+                                if consulta3.Sala_id==int(Salaint):
+                                    print(consulta3.Fecha_In)
+                                    print(consulta3.Fecha_Out)
+                                    if consulta3.Fecha_In==consulta3.Fecha_Out:
+                                        #Si la fecha de entrada es igual que la de salida el registro que hay guardado es el de entrada
+                                        consulta3.update()
 
+                                        response_data = {}
+                                        response_data['result'] = 200
+                                        response_data['IdSala'] = consulta2.Id_Sala
+                                        response_data['IdUsuario'] = consulta.Id_Usuario
+                                        return HttpResponse(json.dumps(response_data), content_type="application/json")
+                                    else:
+                                        #Se crea un nuevo registro por que es una nueva entrada del usuario
+                                        datos = Registro(
+                                            Sala_id=int(Salaint),
+                                            Usuario_id=int(consulta.Id_Usuario)
+                                        )
+                                        datos.save()
+                                        response_data = {}
+                                        response_data['result'] = 200
+                                        response_data['IdSala'] = consulta2.Id_Sala
+                                        response_data['IdUsuario'] = consulta.Id_Usuario
+                                        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+                                else:
+                                    #Es el primer paso de este usuario en esta sala
+                                    datos = Registro(
+                                        Sala_id=int(Salaint),
+                                        Usuario_id=int(consulta.Id_Usuario)
+                                    )
+                                    datos.save()
+                                    response_data = {}
+                                    response_data['result'] = 200
+                                    response_data['IdSala'] = consulta2.Id_Sala
+                                    response_data['IdUsuario'] = consulta.Id_Usuario
+                                    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+                            except Registro.DoesNotExist:
+                                #Es el primer paso del usuario
+                                    datos = Registro(
+                                        Sala_id=int(Salaint),
+                                        Usuario_id=int(consulta.Id_Usuario)
+                                    )
+                                    datos.save()
+                                    response_data = {}
+                                    response_data['result'] = 200
+                                    response_data['IdSala'] = consulta2.Id_Sala
+                                    response_data['IdUsuario'] = consulta.Id_Usuario
+                                    return HttpResponse(json.dumps(response_data), content_type="application/json")
+                            '''
                             #Guardar datos en Registro Nuevo
                             datos = Registro(
                                 Sala_id=int(Salaint),
@@ -133,7 +140,10 @@ def SalaViewSet(request):
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
+        #data = JSONParser().parse(request)
+        body_unicode = request.body.decode('utf-8')
+        data = json.loads(body_unicode)
+
         try:
             # Guardo el dato que me llega del Json
             Hash = data["Hash"]
@@ -157,6 +167,8 @@ def SalaViewSet(request):
             response_data = {}
             response_data['result'] = 200
             response_data['IdSala'] = consulta.Id_Sala
+            response_data['Dependencia']=consulta.Dependencia
+            response_data['Plano'] = base64.encodestring(open(consulta.Plano.path, 'rb').read()).decode('ascii')
             if consulta.Activo:
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
 
