@@ -20,14 +20,14 @@ def UsuarioViewSet(request):
         data = JSONParser().parse(request)
         Salaint = data["Sala_id"]
         Salaint = Salaint.rstrip("\n")
-        #Salaint = AESCipher().decrypt(Salaint)
+        Salaint = AESCipher().decrypt(Salaint)
         Dni = data["Dni"]
         Dni = Dni.rstrip("\n")
 
 
-        # Desencriptar Mensaje
-        #Dni = AESCipher().decrypt(Dni)
-        #Dni = Dni.lower()
+        #Desencriptar Mensaje
+        Dni = AESCipher().decrypt(Dni)
+
 
 
         # Comprobar si existe el Usuario
