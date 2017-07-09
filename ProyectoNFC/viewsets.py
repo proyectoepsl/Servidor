@@ -37,13 +37,16 @@ def UsuarioViewSet(request):
             # Comprobar si el usuario esta activo
             if consulta.Activo:
                 try:
-                    consulta1 = Permiso.objects.get(Usuario=consulta.Id_Usuario)
+                    consulta1 = Permiso.objects.get(Usuario=consulta.Id_Usuario,Sala=int(Salaint))
                 except Permiso.DoesNotExist:
-                    return HttpResponse("Usuario no existe en la tabla permisos", status=404)
+                    response_data = {}
+                    response_data['result'] = 404
+                    response_data['Error'] = "Usuario no tiene permiso para entrar en esta Sala"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json",status=404)
+
                 # Consultar si el usuario tiene permiso
                 if consulta1.Permiso:
-                    #Consultar si es la sala donde quiere entrar si es donde tiene los permisos
-                    if consulta1.Sala_id== int(Salaint):
+                        # Consultar el aforo
                         consulta2 = Sala.objects.get(Id_Sala=int(Salaint))
                         # Consultar el aforo
                         if consulta2.Aforo > 0:
@@ -116,39 +119,34 @@ def UsuarioViewSet(request):
                             response_data['result'] = 200
                             response_data['IdSala'] = consulta2.Id_Sala
                             response_data['IdUsuario'] = consulta.Id_Usuario
-                            return HttpResponse(json.dumps(response_data), content_type="application/json")
+                            return HttpResponse(json.dumps(response_data), content_type="application/json",status=200)
 
                         else:
                             response_data = {}
                             response_data['result'] = 403
                             response_data['Error'] = "Sala ocupada"
-                            return HttpResponse(json.dumps(response_data), content_type="application/json")
+                            return HttpResponse(json.dumps(response_data), content_type="application/json",status=403)
 
-                    else:
-                        response_data = {}
-                        response_data['result'] = 403
-                        response_data['Error'] = "En esta sala no puede entrar este Usuario"
-                        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
                 else:
                     response_data = {}
                     response_data['result'] = 403
                     response_data['Error'] = "El usuario no tiene permisos"
-                    return HttpResponse(json.dumps(response_data), content_type="application/json")
+                    return HttpResponse(json.dumps(response_data), content_type="application/json",status=403)
 
 
             else:
                 response_data = {}
                 response_data['result'] = 401
                 response_data['Error'] = "El usuario esta desactivado"
-                return HttpResponse(json.dumps(response_data), content_type="application/json")
+                return HttpResponse(json.dumps(response_data), content_type="application/json",status=401)
 
 
         except Usuario.DoesNotExist:
             response_data = {}
             response_data['result'] = 401
             response_data['Error'] = "Usuario no existe"
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
+            return HttpResponse(json.dumps(response_data), content_type="application/json",status=401)
 
 
 
@@ -181,7 +179,7 @@ def SalaViewSet(request):
             response_data = {}
             response_data['result'] = 500
             response_data['Error'] = "Mensaje no ha podido ser descifrado"
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
+            return HttpResponse(json.dumps(response_data), content_type="application/json",status=500)
 
         # Comprobar si existe el imei
         try:
@@ -194,7 +192,7 @@ def SalaViewSet(request):
             response_data['Dependencia']=consulta.Dependencia
             response_data['Plano'] = base64.encodestring(open(consulta.Plano.path, 'rb').read()).decode('ascii')
             if consulta.Activo:
-                return HttpResponse(json.dumps(response_data), content_type="application/json")
+                return HttpResponse(json.dumps(response_data), content_type="application/json",status=200)
 
             else:
                 consulta.Activo = True
@@ -205,4 +203,4 @@ def SalaViewSet(request):
             response_data = {}
             response_data['result'] = 404
             response_data['Error'] = "Imei no existe en la base de datos"
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
+            return HttpResponse(json.dumps(response_data), content_type="application/json",status=404)

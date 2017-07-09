@@ -13,7 +13,7 @@ class Sala (models.Model):
     Dependencia=models.CharField(max_length=5,null= True )
 
     def Plano1(self):
-        return mark_safe('<img src="/media/%s" width="200" height="200" />' % (self.Plano))
+        return mark_safe('<img src="/media/%s" width="300" height="300" />' % (self.Plano))
 
     Plano1.short_description = 'Plano Sala'
     def __str__(self):
