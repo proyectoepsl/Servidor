@@ -18,8 +18,8 @@ admin.site.register(Usuario,AdminUsuario)
 
 
 class AdminRegistro (admin.ModelAdmin):
-    list_display = ['Id_Registro','Sala','Usuario','Fecha_In','Fecha_Out']
-    search_fields = ['Id_Registro','Sala','Usuario','Fecha_In','Fecha_Out']
+    list_display = ['Id_Registro','Sala','Usuario','Fecha_In','Fecha_Out','Terminado']
+    search_fields = ['Id_Registro','Sala','Usuario','Fecha_In','Fecha_Out','Terminado']
 
 
 admin.site.register(Registro, AdminRegistro)

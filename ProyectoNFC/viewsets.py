@@ -1,9 +1,9 @@
+from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
 from .models import Registro, Usuario, Sala, Permiso
-from .serializer import RegistroSerializer, UsuarioSerializer, SalaSerializer
+from .serializer import  UsuarioSerializer, SalaSerializer
 from .AESCipher import *
 
 import json
@@ -54,72 +54,41 @@ def UsuarioViewSet(request):
                             consulta2.Aforo -= 1
                             consulta2.save()
                             #Comprobar si registro es de entrada o de salida
-                            '''
+
                             try:
-                                consulta3 = Registro.objects.all(Usuario_id=consulta.Id_Usuario)
-                                if consulta3.Sala_id==int(Salaint):
-                                    print(consulta3.Fecha_In)
-                                    print(consulta3.Fecha_Out)
-                                    if consulta3.Fecha_In==consulta3.Fecha_Out:
-                                        #Si la fecha de entrada es igual que la de salida el registro que hay guardado es el de entrada
-                                        consulta3.update()
-
-                                        response_data = {}
-                                        response_data['result'] = 200
-                                        response_data['IdSala'] = consulta2.Id_Sala
-                                        response_data['IdUsuario'] = consulta.Id_Usuario
-                                        return HttpResponse(json.dumps(response_data), content_type="application/json")
-                                    else:
-                                        #Se crea un nuevo registro por que es una nueva entrada del usuario
-                                        datos = Registro(
-                                            Sala_id=int(Salaint),
-                                            Usuario_id=int(consulta.Id_Usuario)
-                                        )
-                                        datos.save()
-                                        response_data = {}
-                                        response_data['result'] = 200
-                                        response_data['IdSala'] = consulta2.Id_Sala
-                                        response_data['IdUsuario'] = consulta.Id_Usuario
-                                        return HttpResponse(json.dumps(response_data), content_type="application/json")
-
-                                else:
-                                    #Es el primer paso de este usuario en esta sala
+                                consulta3 = Registro.objects.get(Usuario_id=int(consulta.Id_Usuario), Sala_id=int(Salaint),Terminado=False)
+                                # El registro es de salida
+                                if consulta3.Fecha_Out == None:
                                     datos = Registro(
-                                        Sala_id=int(Salaint),
-                                        Usuario_id=int(consulta.Id_Usuario)
+                                        Id_Registro=consulta3.Id_Registro,
+                                        Sala_id=consulta3.Sala_id,
+                                        Usuario_id=consulta3.Usuario_id,
+                                        Fecha_In=consulta3.Fecha_In,
+                                        Fecha_Out=datetime.now(),
+                                        Terminado=True
                                     )
                                     datos.save()
+                                    consulta2.Aforo += 2
+                                    consulta2.save()
                                     response_data = {}
                                     response_data['result'] = 200
                                     response_data['IdSala'] = consulta2.Id_Sala
                                     response_data['IdUsuario'] = consulta.Id_Usuario
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json")
-
+                                    return HttpResponse(json.dumps(response_data), content_type="application/json",
+                                                        status=200)
 
                             except Registro.DoesNotExist:
-                                #Es el primer paso del usuario
-                                    datos = Registro(
-                                        Sala_id=int(Salaint),
-                                        Usuario_id=int(consulta.Id_Usuario)
-                                    )
-                                    datos.save()
-                                    response_data = {}
-                                    response_data['result'] = 200
-                                    response_data['IdSala'] = consulta2.Id_Sala
-                                    response_data['IdUsuario'] = consulta.Id_Usuario
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json")
-                            '''
-                            #Guardar datos en Registro Nuevo
-                            datos = Registro(
-                                Sala_id=int(Salaint),
-                                Usuario_id=int(consulta.Id_Usuario)
-                            )
-                            datos.save()
-                            response_data = {}
-                            response_data['result'] = 200
-                            response_data['IdSala'] = consulta2.Id_Sala
-                            response_data['IdUsuario'] = consulta.Id_Usuario
-                            return HttpResponse(json.dumps(response_data), content_type="application/json",status=200)
+                                # Es registro de entrada
+                                datos = Registro(
+                                    Sala_id=int(Salaint),
+                                    Usuario_id=int(consulta.Id_Usuario)
+                                )
+                                datos.save()
+                                response_data = {}
+                                response_data['result'] = 200
+                                response_data['IdSala'] = consulta2.Id_Sala
+                                response_data['IdUsuario'] = consulta.Id_Usuario
+                                return HttpResponse(json.dumps(response_data), content_type="application/json")
 
                         else:
                             response_data = {}
@@ -184,21 +153,27 @@ def SalaViewSet(request):
         # Comprobar si existe el imei
         try:
             consulta = Sala.objects.get(Hash=mensajeDesencriptado)
-            # Comprobar que esta activa la sala y sino la activo
+            # Comprobar que esta activa la sala
 
-            response_data = {}
-            response_data['result'] = 200
-            response_data['IdSala'] = consulta.Id_Sala
-            response_data['Dependencia']=consulta.Dependencia
-            response_data['Plano'] = base64.encodestring(open(consulta.Plano.path, 'rb').read()).decode('ascii')
+
             if consulta.Activo:
+                #Si esta activa la sala le devuelvo mensaje de confirmacion y le mando los datos para identificar la sala
+                response_data = {}
+                response_data['result'] = 200
+                response_data['IdSala'] = consulta.Id_Sala
+                response_data['Dependencia'] = consulta.Dependencia
+                #Open crea la imagen en array de bit(rb)
+                #Codificar en ASCII
+                #Base64 formatea el ASCII que ya es reconocido por JSON
+                response_data['Plano'] = base64.encodestring(open(consulta.Plano.path, 'rb').read()).decode('ascii')
                 return HttpResponse(json.dumps(response_data), content_type="application/json",status=200)
-
+            #Si la sala no esta activa,le envio un error al usuario
             else:
-                consulta.Activo = True
-                consulta.save()
-                return HttpResponse(json.dumps(response_data), content_type="application/json")
-
+                response_data = {}
+                response_data['result'] = 404
+                response_data['Error'] = "La sala no esta activa "
+                return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
+        #El imei que tiene ese dispositivo no esta almacenado en la base de datos.
         except Sala.DoesNotExist:
             response_data = {}
             response_data['result'] = 404

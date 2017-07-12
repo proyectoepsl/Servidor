@@ -16,6 +16,7 @@ class Sala (models.Model):
         return mark_safe('<img src="/media/%s" width="300" height="300" />' % (self.Plano))
 
     Plano1.short_description = 'Plano Sala'
+
     def __str__(self):
         return (self.Nombre)
 
@@ -23,6 +24,7 @@ class Usuario (models.Model):
     Id_Usuario = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=30)
     Apellidos = models.CharField(max_length=30)
+
     Dni=models.CharField(max_length=9)
     Activo = models.BooleanField(default=False)
 
@@ -34,8 +36,8 @@ class Registro (models.Model):
     Sala =  models.ForeignKey('Sala')
     Usuario = models.ForeignKey('Usuario')
     Fecha_In = models.DateTimeField(auto_now_add=True,auto_now=False,null=True)
-    Fecha_Out = models.DateTimeField(auto_now_add=False,auto_now=True,null=True)
-
+    Fecha_Out = models.DateTimeField(auto_now_add=False,auto_now=False,null=True)
+    Terminado = models.BooleanField(default=False)
 
 class Permiso(models.Model):
     Id_Permiso = models.AutoField(primary_key=True)

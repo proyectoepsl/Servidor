@@ -60,6 +60,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Servidor.urls'
+#Definicion de la ruta para imagenes
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -84,8 +85,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Servidor.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+# Definicion de la base de datos
 
 DATABASES = {
     'default': {
@@ -127,13 +127,14 @@ REST_FRAMEWORK = {
 }
 
 # Internationalization
+#Lenguaje y formato de fechas
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = "es-es"
 DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
 TIME_INPUT_FORMATS = (
-            '%H:%M:%S',     # '14:30:59'
-                '%H:%M',        # '14:30'
+            '%H:%M:%S',
+                '%H:%M',
                 )
 
 
@@ -147,7 +148,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Definicion de rutas estaticas
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
