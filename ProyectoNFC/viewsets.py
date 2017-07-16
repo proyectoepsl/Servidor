@@ -74,8 +74,9 @@ def UsuarioViewSet(request):
                                     response_data['result'] = 200
                                     response_data['IdSala'] = consulta2.Id_Sala
                                     response_data['IdUsuario'] = consulta.Id_Usuario
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json",
-                                                        status=200)
+                                    response_data['Error']='Hasta Pronto'
+
+                                    return HttpResponse(json.dumps(response_data), content_type="application/json",status=200)
 
                             except Registro.DoesNotExist:
                                 # Es registro de entrada
@@ -88,6 +89,7 @@ def UsuarioViewSet(request):
                                 response_data['result'] = 200
                                 response_data['IdSala'] = consulta2.Id_Sala
                                 response_data['IdUsuario'] = consulta.Id_Usuario
+                                response_data['Error']='Bienvenido'
                                 return HttpResponse(json.dumps(response_data), content_type="application/json")
 
                         else:
