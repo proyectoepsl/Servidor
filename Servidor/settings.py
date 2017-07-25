@@ -25,14 +25,13 @@ SECRET_KEY = 'ls5o4yb7my0_*m2kp2ua%$g(!+w_o*rew70wupg87u7_+a2vpg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','192.168.2.129']
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
 INSTALLED_APPS = [
     'suitlocale',
     'suit',
-    'admin_view_permission',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -112,11 +111,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-#Vista segun los permisos del usuario
-ADMIN_VIEW_PERMISSION_MODELS = [
-    'auth.User',
 
-]
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -130,7 +126,7 @@ REST_FRAMEWORK = {
 #Lenguaje y formato de fechas
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = "es-es"
+LANGUAGE_CODE = "es"
 DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
 TIME_INPUT_FORMATS = (
             '%H:%M:%S',

@@ -23,11 +23,11 @@ admin.autodiscover()
 
 
 urlpatterns = [
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
     url(r'^', admin.site.urls),
     url(r'^rest_usuario/$', viewsets.UsuarioViewSet),
     url(r'^rest_sala/$', viewsets.SalaViewSet),
-
+    url(r'^rest_login/$', viewsets.LoginViewSet),
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
