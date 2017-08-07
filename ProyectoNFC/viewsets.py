@@ -1,5 +1,7 @@
 from datetime import datetime
 from django.contrib import auth
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
@@ -22,7 +24,7 @@ def UsuarioViewSet(request):
         data = JSONParser().parse(request)
         Salaint = data["Sala_id"]
         Salaint = Salaint.rstrip("\n")
-        Salaint = AESCipher().decrypt(Salaint)
+        Sala=int = AESCipher().decrypt(Salaint)
         Dni = data["Dni"]
         Dni = Dni.rstrip("\n")
         Dni = AESCipher().decrypt(Dni)
@@ -159,6 +161,8 @@ def SalaViewSet(request):
                 response_data = {}
                 response_data['result'] = 200
                 response_data['IdSala'] = consulta.Id_Sala
+                response_data['Capacidad'] = consulta.Aforo_Maximo
+                response_data['Aforo'] = consulta.Aforo
                 response_data['Dependencia'] = consulta.Dependencia
                 # Open crea la imagen en array de bit(rb)
                 # Codificar en ASCII
@@ -187,25 +191,130 @@ def LoginViewSet(request):
         data = json.loads(body_unicode)
         # Guardo el dato que me llega del Json
         try:
+            # Guardo el dato que me llega del Json
             Username = data["username"]
             Password = data["password"]
+            try:
+                # Quito el \n al mensaje
+                Username = Username.rstrip("\n")
+                Password = Password.rstrip("\n")
+                # Desencriptar Mensaje
+                username = AESCipher().decrypt(Username)
+                password = AESCipher().decrypt(Password)
 
-            # Confirmo si el usurio esta autentificado
-            user = auth.authenticate(username=Username, password=Password)
-            if user is not None and user.is_active:
+
+            # Confirmo si el usuario esta autentificado
+                user = authenticate(username=username,password=password)
+                #password = check_password(password)
+                if user is not None and user.is_active:
+                   response_data = {}
+                   response_data['result'] = 200
+                   response_data['Error'] = "Datos de usuario correcto"
+                   return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
+                else:
+                   response_data = {}
+                   response_data['result'] = 404
+                   response_data['Error'] = "Datos de usuario incorrectos"
+                   return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
+
+            except:
                 response_data = {}
-                response_data['result'] = 200
-                response_data['Error'] = "Datos de usuario correcto"
-                return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
-
-            else:
-                response_data = {}
-                response_data['result'] = 404
-                response_data['Error'] = "Datos de usurio incorrectos"
-                return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
-
+                response_data['result'] = 500
+                response_data['Error'] = "Mensaje no ha podido ser descifrado"
+                return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
         except:
             response_data = {}
             response_data['result'] = 500
             response_data['Error'] = "No se han recibido datos de login"
             return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
+
+@csrf_exempt
+def ModPassViewSet(request):
+ if request.method == 'POST':
+        # data = JSONParser().parse(request)
+        body_unicode = request.body.decode('utf-8')
+        data = json.loads(body_unicode)
+        # Guardo el dato que me llega del Json
+        try:
+            # Guardo el dato que me llega del Json
+            Username = data["username"]
+            Password = data["password"]
+            try:
+                # Quito el \n al mensaje
+                Username = Username.rstrip("\n")
+                Password = Password.rstrip("\n")
+                # Desencriptar Mensaje
+                mensajeDesencriptado1 = AESCipher().decrypt(Username)
+                mensajeDesencriptado2 = AESCipher().decrypt(Password)
+
+                # Confirmo si el usuario esta autentificado
+                try:
+                    user = User.objects.get(username=mensajeDesencriptado1)
+                    user.set_password(mensajeDesencriptado2)
+                    user.save()
+                    response_data = {}
+                    response_data['result'] = 200
+                    response_data['Error'] = "Password modificado"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
+                except User.DoesNotExist:
+                    response_data = {}
+                    response_data['result'] = 404
+                    response_data['Error'] = "Usuario no existe en la Base de Datos"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
+
+            except:
+                response_data = {}
+                response_data['result'] = 500
+                response_data['Error'] = "Mensaje no ha podido ser descifrado"
+                return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
+        except:
+            response_data = {}
+            response_data['result'] = 500
+            response_data['Error'] = "No se han recibido datos de Usuario"
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
+@csrf_exempt
+def ModUserViewSet(request):
+    if request.method == 'POST':
+        # data = JSONParser().parse(request)
+        body_unicode = request.body.decode('utf-8')
+        data = json.loads(body_unicode)
+        # Guardo el dato que me llega del Json
+        try:
+            # Guardo el dato que me llega del Json
+            Username = data["usernamepref"]
+            UsernameMOD = data["username"]
+            try:
+                # Quito el \n al mensaje
+                Username = Username.rstrip("\n")
+                UsernameMOD = UsernameMOD.rstrip("\n")
+                # Desencriptar Mensaje
+                mensajeDesencriptado1 = AESCipher().decrypt(Username)
+                mensajeDesencriptado2 = AESCipher().decrypt(UsernameMOD)
+
+
+            # Confirmo si el usuario esta autentificado
+                try:
+                    user = User.objects.get(username=mensajeDesencriptado1)
+                    user.username=mensajeDesencriptado2
+                    user.save()
+                    response_data = {}
+                    response_data['result'] = 200
+                    response_data['Error'] = "Usuario modificado"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json", status=200)
+                except User.DoesNotExist:
+                    response_data = {}
+                    response_data['result'] = 404
+                    response_data['Error'] = "Usuario no existe en la Base de Datos"
+                    return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
+
+            except:
+                response_data = {}
+                response_data['result'] = 500
+                response_data['Error'] = "Mensaje no ha podido ser descifrado"
+                return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
+        except:
+            response_data = {}
+            response_data['result'] = 500
+            response_data['Error'] = "No se han recibido datos de Usuario"
+            return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
+

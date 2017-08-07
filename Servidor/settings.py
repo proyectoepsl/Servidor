@@ -25,7 +25,7 @@ SECRET_KEY = 'ls5o4yb7my0_*m2kp2ua%$g(!+w_o*rew70wupg87u7_+a2vpg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','192.168.2.129']
 
 # Application definition
 
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'crypto'
 ]
 SUIT_CONFIG = {
-    'ADMIN_NAME': 'SERVIDOR PROYECTO NFC'
+    'ADMIN_NAME': 'SERVIDOR PROYECTO NFC',
+
 }
 
 MIDDLEWARE = [
@@ -66,10 +67,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
+
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

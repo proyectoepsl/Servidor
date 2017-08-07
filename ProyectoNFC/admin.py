@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
 from django.contrib import admin
+
+from suit.admin import SortableModelAdmin
 from .models import Sala,Usuario,Registro,Permiso
 
 class AdminSala (admin.ModelAdmin):
-    list_display = ['Id_Sala','Nombre','Hash','Aforo','Aforo_Maximo','Activo','Plano1','Dependencia']
-    list_editable = ['Nombre','Hash','Activo','Aforo','Aforo_Maximo','Dependencia']
+    list_display = ['Id_Sala','Nombre','Aforo','Activo','Aforo_Maximo','Dependencia','Plano1']
+    list_editable = ['Nombre','Activo']
     search_fields = ['Id_Sala','Nombre','Hash','Aforo','Activo','Aforo_Maximo','Dependencia']
 
 admin.site.register(Sala,AdminSala)

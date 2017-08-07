@@ -28,6 +28,8 @@ urlpatterns = [
     url(r'^rest_usuario/$', viewsets.UsuarioViewSet),
     url(r'^rest_sala/$', viewsets.SalaViewSet),
     url(r'^rest_login/$', viewsets.LoginViewSet),
+    url(r'^rest_modUsuario/$', viewsets.ModUserViewSet),
+    url(r'^rest_modPassword/$', viewsets.ModPassViewSet),
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
