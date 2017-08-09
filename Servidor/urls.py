@@ -19,6 +19,7 @@ from ProyectoNFC import viewsets
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.conf import settings
 from django.conf.urls.static import static
+from ProyectoNFC.views import acercaDe
 admin.autodiscover()
 
 
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'^rest_login/$', viewsets.LoginViewSet),
     url(r'^rest_modUsuario/$', viewsets.ModUserViewSet),
     url(r'^rest_modPassword/$', viewsets.ModPassViewSet),
+    url(r'^acercaDe/', acercaDe, name='acercaDe'),
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
