@@ -7,7 +7,7 @@ from .models import Sala,Usuario,Registro,Permiso
 class AdminSala (admin.ModelAdmin):
     list_display = ['Id_Sala','Nombre','Aforo','Activo','Aforo_Maximo','Dependencia','Plano1']
     list_editable = ['Nombre','Activo']
-    search_fields = ['Id_Sala','Nombre','Hash','Aforo','Activo','Aforo_Maximo','Dependencia']
+    search_fields = ['Id_Sala','Nombre','Imei','Aforo','Activo','Aforo_Maximo','Dependencia']
 
 admin.site.register(Sala,AdminSala)
 

@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 class Sala (models.Model):
     Id_Sala = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=50, unique=True)
-    Hash =models.CharField(max_length=15,unique=True)
+    Imei =models.CharField(max_length=15,unique=True)
     Aforo = models.PositiveIntegerField(default=0)
     Aforo_Maximo=models.PositiveIntegerField(default=0)
     Activo = models.BooleanField(default= False)
@@ -14,7 +14,7 @@ class Sala (models.Model):
     Dependencia=models.CharField(max_length=5,null= True )
 
     def Plano1(self):
-        return mark_safe('<img src="/media/%s" width="300" height="300" />' % (self.Plano))
+        return mark_safe('<img src="/media/%s" width="150" height="100" />' % (self.Plano))
 
     Plano1.short_description = 'Plano Sala'
 
@@ -40,8 +40,14 @@ class Registro (models.Model):
     Fecha_Out = models.DateTimeField(auto_now_add=False,auto_now=False,null=True)
     Terminado = models.BooleanField(default=False)
 
+    def __int__(self):
+        return (self.Id_Registro)
+
 class Permiso(models.Model):
     Id_Permiso = models.AutoField(primary_key=True)
     Sala = models.ForeignKey('Sala')
     Usuario = models.ForeignKey('Usuario')
     Permiso = models.BooleanField(default=False)
+    def __int__(self):
+     return (self.Id_Permiso)
+
