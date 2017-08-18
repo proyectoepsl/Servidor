@@ -35,71 +35,82 @@ def UsuarioViewSet(request):
             # Comprobar si el usuario esta activo
             if consulta.Activo:
                 try:
+                    # Comprobar si el usuario esta permitido en esta sala
+
                     consulta1 = Permiso.objects.get(Usuario=consulta.Id_Usuario, Sala=int(Salaid))
+                    # Comprobar si el permiso esta activo
+
                     if consulta1.Permiso:
                         # Consultar el todos los datos de mi sala
                         try:
                             consulta2 = Sala.objects.get(Id_Sala=int(Salaid))
+                            if consulta2.Activo:
+                                try:
+                                    consulta3 = Registro.objects.get(Usuario_id=int(consulta.Id_Usuario),Sala_id=(consulta2.Id_Sala),Terminado=False)
+                                    # El registro es de salida
+                                    if consulta3.Fecha_Out == None:
+                                        datos = Registro(
+                                            Id_Registro=consulta3.Id_Registro,
+                                            Sala_id=consulta3.Sala_id,
+                                            Usuario_id=consulta3.Usuario_id,
+                                            Fecha_In=consulta3.Fecha_In,
+                                            Fecha_Out=datetime.now(),
+                                            Terminado=True
+                                        )
+                                        datos.save()
+                                        consulta2.Aforo -= 1
+                                        consulta2.save()
+                                        response_data = {}
+                                        response_data['result'] = 200
+                                        response_data['IdSala'] = consulta2.Id_Sala
+                                        response_data['IdUsuario'] = consulta.Id_Usuario
+                                        response_data['Aforo'] = consulta2.Aforo
+                                        response_data['Error'] = 'Hasta Pronto'
 
-                            try:
-                                consulta3 = Registro.objects.get(Usuario_id=int(consulta.Id_Usuario),Sala_id=(consulta2.Id_Sala),Terminado=False)
-                                # El registro es de salida
-                                if consulta3.Fecha_Out == None:
-                                    datos = Registro(
-                                        Id_Registro=consulta3.Id_Registro,
-                                        Sala_id=consulta3.Sala_id,
-                                        Usuario_id=consulta3.Usuario_id,
-                                        Fecha_In=consulta3.Fecha_In,
-                                        Fecha_Out=datetime.now(),
-                                        Terminado=True
-                                    )
-                                    datos.save()
-                                    consulta2.Aforo -= 1
-                                    consulta2.save()
-                                    response_data = {}
-                                    response_data['result'] = 200
-                                    response_data['IdSala'] = consulta2.Id_Sala
-                                    response_data['IdUsuario'] = consulta.Id_Usuario
-                                    response_data['Error'] = 'Hasta Pronto'
+                                        return HttpResponse(json.dumps(response_data), content_type="application/json",
+                                                            status=200)
 
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json",
-                                                        status=200)
-
-                            except Registro.DoesNotExist:
-                                # Consultar aforo
-                                if consulta2.Aforo < consulta2.Aforo_Maximo:
-                                    # Es registro de entrada
-                                    datos = Registro(
-                                        Sala_id=consulta2.Id_Sala,
-                                        Usuario_id=consulta.Id_Usuario
-                                    )
-                                    datos.save()
-                                    consulta2.Aforo += 1
-                                    consulta2.save()
-                                    response_data = {}
-                                    response_data['result'] = 200
-                                    response_data['IdSala'] = consulta2.Id_Sala
-                                    response_data['IdUsuario'] = consulta.Id_Usuario
-                                    response_data['Aforo'] = consulta2.Aforo
-                                    response_data['Error'] = 'Bienvenido,recuerde pasar su credencial por este punto al salir'
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json")
-                                # Aforo completo
-                                else:
-                                    response_data = {}
-                                    response_data['result'] = 403
-                                    response_data['Error'] = "Sala completa"
-                                    return HttpResponse(json.dumps(response_data), content_type="application/json",
-                                                        status=403)
+                                except Registro.DoesNotExist:
+                                    # Consultar aforo
+                                    if consulta2.Aforo < consulta2.Aforo_Maximo:
+                                        # Es registro de entrada
+                                        datos = Registro(
+                                            Sala_id=consulta2.Id_Sala,
+                                            Usuario_id=consulta.Id_Usuario
+                                        )
+                                        datos.save()
+                                        consulta2.Aforo += 1
+                                        consulta2.save()
+                                        response_data = {}
+                                        response_data['result'] = 200
+                                        response_data['IdSala'] = consulta2.Id_Sala
+                                        response_data['IdUsuario'] = consulta.Id_Usuario
+                                        response_data['Aforo'] = consulta2.Aforo
+                                        response_data['Error'] = 'Recuerde pasar su credencial por este punto al salir'
+                                        return HttpResponse(json.dumps(response_data), content_type="application/json")
+                                    # Aforo completo
+                                    else:
+                                        response_data = {}
+                                        response_data['result'] = 403
+                                        response_data['Error'] = "Sala completa"
+                                        return HttpResponse(json.dumps(response_data), content_type="application/json",
+                                                            status=403)
+                            else:
+                                response_data = {}
+                                response_data['result'] = 404
+                                response_data['Error'] = "Sala no está activa"
+                                return HttpResponse(json.dumps(response_data), content_type="application/json",
+                                                    status=404)
                         except Sala.DoesNotExist:
                             response_data = {}
                             response_data['result'] = 404
-                            response_data['Error'] = "Usuario no tiene permiso para entrar en esta Sala"
+                            response_data['Error'] = "Sala no existe"
                             return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
 
                     else:
                         response_data = {}
                         response_data['result'] = 403
-                        response_data['Error'] = "El usuario no tiene permisos"
+                        response_data['Error'] = "Permiso del usuario desactivado"
                         return HttpResponse(json.dumps(response_data), content_type="application/json", status=403)
                 except Permiso.DoesNotExist:
                     response_data = {}
@@ -174,13 +185,13 @@ def SalaViewSet(request):
             else:
                 response_data = {}
                 response_data['result'] = 404
-                response_data['Error'] = "La sala no esta activa "
+                response_data['Error'] = "La sala no está activa."
                 return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
         # El imei que tiene ese dispositivo no esta almacenado en la base de datos.
         except Sala.DoesNotExist:
             response_data = {}
             response_data['result'] = 404
-            response_data['Error'] = "Imei no existe en la base de datos"
+            response_data['Error'] = "El Imei no existe en la base de datos"
             return HttpResponse(json.dumps(response_data), content_type="application/json", status=404)
 
 
@@ -294,8 +305,9 @@ def ModUserViewSet(request):
                 mensajeDesencriptado1 = AESCipher().decrypt(Username)
                 mensajeDesencriptado2 = AESCipher().decrypt(UsernameMOD)
 
-                # Confirmo si el usuario esta autentificado
+
                 try:
+                    #Modificar username de usuario en la tabla.
                     user = User.objects.get(username=mensajeDesencriptado1)
                     user.username = mensajeDesencriptado2
                     user.save()
@@ -312,7 +324,7 @@ def ModUserViewSet(request):
             except:
                 response_data = {}
                 response_data['result'] = 500
-                response_data['Error'] = "Mensaje no ha podido ser descifrado"
+                response_data['Error'] = "Nombre de Usuario ya Existe en la Base de Datos"
                 return HttpResponse(json.dumps(response_data), content_type="application/json", status=500)
         except:
             response_data = {}
